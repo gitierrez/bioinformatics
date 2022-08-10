@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def complement(seq: str, type: str = 'DNA', standard_direction: bool = True) -> str:
     """
     Return the complementary strand of a given DNA or RNA sequence.
@@ -34,3 +37,14 @@ def group_values_by_complement(counts: dict) -> dict:
         grouped_counts[seq] = count + counts.get(complement_seq, 0)
         exclusions.add(complement_seq)
     return grouped_counts
+
+
+def gc_skew(genome: str, window_size: int = 1):
+    """
+    Return the GC skew of a genome.
+    """
+    skew = np.zeros(len(genome) - window_size + 2)
+    for i in range(len(genome) - window_size + 1):
+        window = genome[i:i+window_size]
+        skew[i+1] = window.count('G') - window.count('C')
+    return skew

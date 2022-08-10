@@ -5,16 +5,14 @@ import matplotlib.pyplot as plt
 from biomics.string.kmers import kmer_locations
 
 
-def plot_kmer_locations(genome, kmer, figsize=(2, 1)):
+def plot_kmer_locations(genome, kmer_length, locations, figsize=(2, 1)):
     """
     Returns numpy array with the kmer locations plot.
     """
-    locations = kmer_locations(genome, kmer)
-
     template = np.arange(len(genome))
     locs = np.zeros(len(genome))
     for location in locations:
-        locs[location:location + len(kmer)] = 1
+        locs[location:location + kmer_length] = 1
 
     fig, ax = plt.subplots(figsize=figsize)
 

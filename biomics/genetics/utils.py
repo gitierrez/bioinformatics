@@ -1,27 +1,34 @@
-import numpy as np
+from biomics.genetics import DNASequence
 
 
-def complement(seq: str, type: str = 'DNA', standard_direction: bool = True) -> str:
-    """
-    Return the complementary strand of a given DNA or RNA sequence.
+def validate_nucleotides(value: str, valid_nucleotides: set = None):
+    if valid_nucleotides is None:
+        valid_nucleotides = {'A', 'T', 'C', 'G'}
+    for i, nucleotide in enumerate(value):
+        if nucleotide not in valid_nucleotides:
+            raise ValueError(
+                f"Invalid character {nucleotide} found at position {i} in DNA sequence"
+            )
 
-    Args:
-        seq: The sequence to complement.
-        type: The type of sequence. Either 'DNA' or 'RNA'.
-        standard_direction: If True, the complementary strand will be in the 5'-3' direction.
-    """
-    if type == 'DNA':
-        complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-    elif type == 'RNA':
-        complement = {'A': 'U', 'U': 'A', 'C': 'G', 'G': 'C'}
-    else:
-        raise ValueError("Type must be 'DNA' or 'RNA'")
-    try:
-        if standard_direction:
-            return ''.join(complement[nucleotide] for nucleotide in seq[::-1])
-        return ''.join([complement[nuc] for nuc in seq])
-    except KeyError:
-        raise ValueError("Invalid nucleotide in sequence")
+
+def get_region_in_circular_array(array, center, window_size):
+    half_window = window_size // 2
+    if center - half_window >= 0:
+        return array[center - half_window : center + half_window + 1]
+    return array[-(half_window - center):] + array[: center + half_window + 1]
+
+
+def get_frequency_map(sequence: DNASequence, subsequence_length: int, **kwargs):
+    frequency_map = {}
+    for i in range(len(sequence) - subsequence_length + 1):
+        subsequence = DNASequence(sequence[i: i + subsequence_length])
+        similar_sequences = subsequence.variations(**kwargs)
+        for seq in similar_sequences:
+            if seq in frequency_map:
+                frequency_map[seq] += 1
+            else:
+                frequency_map[seq] = 1
+    return frequency_map
 
 
 def group_values_by_complement(counts: dict) -> dict:
@@ -37,14 +44,3 @@ def group_values_by_complement(counts: dict) -> dict:
         grouped_counts[seq] = count + counts.get(complement_seq, 0)
         exclusions.add(complement_seq)
     return grouped_counts
-
-
-def gc_skew(genome: str, window_size: int = 1):
-    """
-    Return the GC skew of a genome.
-    """
-    skew = np.zeros(len(genome) - window_size + 2)
-    for i in range(len(genome) - window_size + 1):
-        window = genome[i:i+window_size]
-        skew[i+1] = window.count('G') - window.count('C')
-    return skew

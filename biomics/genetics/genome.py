@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomics.genetics import DNASequence
+from biomics.genetics.sequence import variations
 from biomics.genetics.utils import (
     validate_nucleotides,
     get_region_in_circular_array,
@@ -25,15 +25,15 @@ class ProkaryoticGenome:
 
     def locations_of_sequence(
         self,
-        seq: DNASequence,
+        seq: str,
         include_complement: bool = False,
         include_variations_up_to: int = 0,
     ):
         locations = []
-        look_for = seq.variations(include_complement, include_variations_up_to)
+        look_for = variations(seq, include_complement, include_variations_up_to)
 
         for i in range(len(self) - len(seq) + 1):
-            current_seq = self.value[i : i + len(seq)]
+            current_seq = self[i : i + len(seq)]
             if current_seq in look_for:
                 locations.append(i)
         return locations

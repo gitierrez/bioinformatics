@@ -1,1 +1,2 @@
 from .plot_kmer_locations import plot_kmer_locations
+from .gc_skew_curve import plot_gc_skew_curve

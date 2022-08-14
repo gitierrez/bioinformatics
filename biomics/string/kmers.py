@@ -1,6 +1,3 @@
-from biomics.string.distance import hamming_distance
-
-
 # TODO: consider creating a kmer class with methods such as complement
 def count_ocurrences(s: str, t: str) -> int:
     """

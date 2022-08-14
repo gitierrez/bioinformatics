@@ -56,7 +56,7 @@ class ProkaryoticGenome:
         # dnaA boxes tend to have a high AT content
         return sorted(
             candidates, key=lambda x: x.count("A") + x.count("T"), reverse=True
-        )
+        ), max_freq
 
     def gc_skew(self):
         skew = np.zeros(len(self.value))
